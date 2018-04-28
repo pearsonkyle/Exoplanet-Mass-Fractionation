@@ -1,10 +1,10 @@
-import pickle
-import numpy as np
-import matplotlib.pyplot as plt
 from scipy.optimize import brentq as findzero
 from scipy.interpolate import interp1d
-from scipy.integrate import trapz
-from astropy.io import fits
+import matplotlib.pyplot as plt
+import numpy as np
+import pickle
+
+from get_parameters import get_pars 
 
 kb = 1.38e-16  # g cm2 s-2 K-1 [erg/K]
 G = 6.674e-8 # cm3 g-1 s-2
@@ -15,8 +15,8 @@ mp = 1.67e-24 # g
 rsun = 6.957e10 # cm 
 rjup = 6.9911e9 # cm 
 mjup = 1.898e30 # g
-rearth = 637.1e6 # cm
-mearth = 5.97e28 # g
+rearth = 6.371e8 # cm
+mearth = 5.97e27 # g
 AU = 1.496e+13 # cm 
 pc = 3.086e+18 # cm 
 
@@ -30,12 +30,6 @@ datatype = [
     ('radius error','f8')
 ]
 atom_data = np.genfromtxt('atomic van der waal radii.csv',delimiter=',',dtype=datatype,skip_header=1)
-
-class AttributeDict(dict):
-    def __getattr__(self, name):
-        return self[name]
-    def __setattr__(self,name,val):
-        self[name] = val
 
 class Interpolator(object):
     def __init__(self,data):
@@ -83,7 +77,7 @@ def crossover_zero(m2,*args):
     # get the van der waals radius for mass of atom
     d1 = 2*kinetic_radius(m1)*1e-8 # convert Angstrom to cm
     d2 = 2*kinetic_radius(m2*mp)*1e-8 
-    b1 = binarydiffusion(T,m1,m2,d1,d2)
+    b1 = 2*binarydiffusion(T,m1,m2,d1,d2)
 
     return crossover(*args,b1)/mp - m2
 
@@ -106,6 +100,7 @@ def crossover(Feuv,R,M,T,m1,x1,b1):
     See Hunten 1987 
 
     input parameters:
+    check FEUV unit
         Feuv - energy flux loss from planet (ratio of incident flux to grav potential) [erg/cm2/s]
         m1 - mass of constituent 1 being carried away [g]
         M - mass of planet [g]
@@ -120,33 +115,39 @@ def crossover(Feuv,R,M,T,m1,x1,b1):
 if __name__ == "__main__":
     
     # parameters for planet 
-    pars = AttributeDict({
-        'R':0.3767*rjup, # Radius of Planet [cm]
-        'M':0.0727*mjup, # Mass of Planet [g]
-        'a':0.0386*AU, # Semi-major Axis [AU]
-        'm1':1*mp, # Mass of Constituent 1 [g]
-        'starspec':'Spectra/hlsp_muscles_multi_multi_gj436_broadband_v22_const-res-sed.fits',
-        'b1':lambda T:  1.04*10**18 * T**0.732, # binary diffusion coefficient [1/cm/s]
-        'x1':0.9, # Fraction of Constituent 1 
-        'T':600, # Temperature of Planet [K]
-        'distance':10.14 # Distance to planet [parsec]
-    })
-
-    # H-He diffusion coefficients are different by a factor of 3
-    # the paramterized function is larger
-
-    # load data from star into grid 
-    spec = fits.getdata(pars.starspec,1)
-    mask = spec['WAVELENGTH'] < 912 # EUV wavelength
-    Feuv = spec['FLUX'][mask] * (pars.distance*pc)**2/pars.a**2  # * spec['WAVELENGTH'][mask] * 1e-8 / (h*c)
-    pars.Feuv = trapz(Feuv,spec['WAVELENGTH'][mask])
-    pars.FLUX = spec['FLUX'][mask]
-    pars.WAVELENGTH = spec['WAVELENGTH'][mask]
-
-    cmass = findzero(crossover_zero, 1, 100, args=(pars.Feuv,
+    #pars = get_pars('GJ 436 b',T=750)
+    #pars = get_pars('GJ 1214 b',T=400)
+    pars = get_pars('HD 97658 b',T=750)
+    
+    cmass = findzero(crossover_zero, 1, 1000, args=(pars.Feuv,
                                                     pars.R,
-                                                    pars.M,
+                                                    pars.MASS,
                                                     pars.T,
                                                     pars.m1,
                                                     pars.x1) )
-    print('crossover mass: {:.1f} amu'.format(cmass) )    
+    
+    upper = findzero(crossover_zero, 1, 1000, args=(pars.Feuv,
+                                                    pars.R+pars.UR,
+                                                    pars.MASS-pars.UMASS,
+                                                    pars.T,
+                                                    pars.m1,
+                                                    pars.x1) )
+
+    lower = findzero(crossover_zero, 1, 1000, args=(pars.Feuv,
+                                                    pars.R-pars.UR,
+                                                    pars.MASS+pars.UMASS,
+                                                    pars.T,
+                                                    pars.m1,
+                                                    pars.x1) )
+
+    print('crossover mass: {:.1f} - {:.1f} [amu]'.format(lower,upper) )    
+
+    print(pars.Leuv)
+
+    # atomic radii plot 
+    #f,ax = plt.subplots(1)
+    #ax.plot(atom_data['mass'],atom_data['radius'],'k-')
+    #ax.set_xlabel("Mass (amu)")
+    #ax.set_ylabel("Radius (A)")
+    #ax.set_title("Atomic van der Waal Radii")
+    #plt.show()
