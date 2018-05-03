@@ -35,14 +35,13 @@ def crossover_zero(m2,*args):
         input parameters:
             m2 - crossover mass [amu]    
     '''
-    Feuv,R,M,T,m1,x1,eta,K,a = args 
+    T,Mdot,M,R,x1,m1, = args 
 
     # get the van der waals radius for mass of atom
     d1 = 2*kinetic_radius(m1)*1e-8 # convert Angstrom to cm
     d2 = 2*kinetic_radius(m2*mp)*1e-8 
     b1 = 2*binarydiffusion(T,m1,m2,d1,d2)
 
-    print('inside cross over eval, need to redo code')
     return crossover(*args,b1)/mp - m2
 
 def massloss(Mdot,R):
@@ -75,7 +74,7 @@ def massflux(Leuv,A,MASS,R, ruvrp2,K,eta, **kwargs):
     Mdot = Feuv * 0.25 * ruvrp2 / grav 
     return Mdot
 
-def crossover(T,Mdot,b1,M,R,x1,m1):
+def crossover(T,Mdot,M,R,x1,m1, b1):
     '''
     Crossover mass at which a heavier second constituent will not be dragged along with constituent 1
     See Hunten 1987 
@@ -95,7 +94,7 @@ def crossover(T,Mdot,b1,M,R,x1,m1):
         K - Roche lobe effect (Erkaev+2007)
         a - scaling of absorption radius to emitted 
     '''
-    m2 = m1 + k*T*Mdot*R**2/(b1*G*M*x1*m1)
+    m2 = m1 + kb*T*Mdot*R**2/(b1*G*M*x1*m1)
     return m2
 
 def equilibrium_temp(TEFF,AR,F,Ab,**kwargs):
@@ -198,46 +197,14 @@ if __name__ == "__main__":
     pars = get_pars('GJ 436 b')
     #pars = get_pars('GJ 1214 b')
     #pars = get_pars('HD 97658 b')
-    import pdb; pdb.set_trace() 
 
-    cmass = findzero(crossover_zero, 1, 100, args=(pars.Feuv,
-                                                    pars.R,
+    cmass = findzero(crossover_zero, 1, 100, args=(pars.Teq,
+                                                    pars.Mdot,
                                                     pars.MASS,
-                                                    pars.Teq,
-                                                    pars.m1,
+                                                    pars.R,
                                                     pars.x1,
-                                                    pars.heatefficiency,
-                                                    pars.rochefactor,
-                                                    pars.radiusfactor) )
+                                                    pars.m1) )
 
-    upper = findzero(crossover_zero, 1, 100, args=(pars.Feuv,
-                                                    pars.R+pars.UR,
-                                                    pars.MASS-pars.UMASS,
-                                                    pars.Teq,
-                                                    pars.m1,
-                                                    pars.x1,
-                                                    pars.heatefficiency,
-                                                    pars.rochefactor,
-                                                    pars.radiusfactor) )
+    print('cross over mass: {:.1f}'.format(cmass) )
 
-    lower = findzero(crossover_zero, 1, 100, args=(pars.Feuv,
-                                                    pars.R-pars.UR,
-                                                    pars.MASS+pars.UMASS,
-                                                    pars.Teq,
-                                                    pars.m1,
-                                                    pars.x1,
-                                                    pars.heatefficiency,
-                                                    pars.rochefactor,
-                                                    pars.radiusfactor) )
-
-    print('crossover mass: {:.1f} - {:.1f} [amu]'.format(lower,upper) )    
-
-    print(pars.Leuv)
-
-    # atomic radii plot 
-    #f,ax = plt.subplots(1)
-    #ax.plot(atom_data['mass'],atom_data['radius'],'k-')
-    #ax.set_xlabel("Mass (amu)")
-    #ax.set_ylabel("Radius (A)")
-    #ax.set_title("Atomic van der Waal Radii")
-    #plt.show()
+    # Atmospheric hydrodynamic escape calculation for the crossover mass at which a heavier second constituent will not be dragged along with a lighter constituent (i.e. H).
