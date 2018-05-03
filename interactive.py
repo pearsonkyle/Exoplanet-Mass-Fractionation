@@ -9,8 +9,7 @@ from crossover_mass import *
 
 # parameters for planet 
 #pars = get_pars('GJ 436 b',T=750)
-pars = get_pars('GJ 1214 b',T=400)
-pars = get_pars('')
+pars = get_pars('GJ 1214 b')
 
 
 # load spectra and compute gravity
@@ -38,7 +37,7 @@ M = np.linspace( 1, 25, 90)*mearth
 R = np.linspace( 1, 4.5, 40)*rearth
 mg, rg = np.meshgrid(M,R)
 
-# TODO TEST THIS
+
 for i in range(R.shape[0]):
     for j in range(M.shape[0]):
                 
