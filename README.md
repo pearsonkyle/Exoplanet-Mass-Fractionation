@@ -5,7 +5,7 @@ The summary of this project is as follows:
 - Use Navier-Stokes equation including drag forces to model atmospheric escape from an exoplanet atmosphere
 - Derive the energy limited escape rate from the planet using EUV spectra from MUSCLES Treasury Survey
 - Derive diffusion coefficients using kinetic theory and van der Waal radii of atoms
-- Compute the crossover mass (see Hunten 1987 for derivation) 
+- Compute the crossover mass (see [Hunten 1987](http://adsabs.harvard.edu/abs/1987Icar...69..532H) for derivation) 
 
 This project was completed for class PTYS 598B - Special Topics in Planetary Science (Atmospheric Escape) taught by Roger Yelle (Spring2018). 
 
@@ -13,7 +13,7 @@ This project was completed for class PTYS 598B - Special Topics in Planetary Sci
 ## File Guide
 [mass-fractionation-exoplanet.pdf](https://github.com/pearsonkyle/Exoplanet-Mass-Fractionation/blob/master/mass-fractionation-exoplanet.pdf) - White paper for the project.
 
-[crossover_mass.py](https://github.com/pearsonkyle/Exoplanet-Mass-Fractionation/blob/master/crossover_mass.py) - calculations for energy limited escape, mass los rates and crossover mass
+[crossover_mass.py](https://github.com/pearsonkyle/Exoplanet-Mass-Fractionation/blob/master/crossover_mass.py) - calculations for energy limited escape, mass loss rates and crossover mass
 
 [atomic van der waal radii.csv](https://github.com/pearsonkyle/Exoplanet-Mass-Fractionation/blob/master/atomic%20van%20der%20waal%20radii.csv) - Van der Waal radii of atoms used when computing diffusion coefficients
 
