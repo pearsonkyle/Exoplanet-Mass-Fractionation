@@ -1,5 +1,5 @@
 # Exoplanet-Mass-Fractionation
-Exoplanets with orbits close to their host star are subject to intense stellar radiation. High energy radiation from x-ray to ultraviolet drives photochemistry and atmospheric escape in the upper atmosphere of planets. If the escape rate of a lighter constituent (i.e. H) is high enough, it can drag heavier species along with it thus fractionating the atmosphere. Here I propose to use hydrodynamic escape in an energy limited regime to explore the effects of drag on carrying away heavier species (Z$>$1).
+Exoplanets with orbits close to their host star are subject to intense stellar radiation. High energy radiation from x-ray to ultraviolet drives photochemistry and atmospheric escape in the upper atmosphere of planets. If the escape rate of a lighter constituent (i.e. H) is high enough, it can drag heavier species along with it thus fractionating the atmosphere. Here I propose to use hydrodynamic escape in an energy limited regime to explore the effects of drag on carrying away heavier species (Z>1).
 
 The summary of this project is as follows: 
 - Use Navier-Stokes equation including drag forces to model atmospheric escape from an exoplanet atmosphere
