@@ -150,7 +150,7 @@ def get_pars(name='GJ 436 b', m1=1*mp, x1=0.9, T=0, heatefficiency=0.2, spectraf
     # compute Feuv and Leuv from spectrum 
     spec = fits.getdata(pars.starspec,1)
     mask = (spec['WAVELENGTH'] < 912) #& (spec['WAVELENGTH'] > 100) # EUV wavelength
-    Feuv = spec['FLUX'][mask] * pars.DIST**2/pars.A**2 # erg/cm2/s/A
+    Feuv = spec['FLUX'][mask] * pars.DIST**2/pars.A**2 # erg/cm2/s/A at the planet
     pars.Feuv = trapz(Feuv,spec['WAVELENGTH'][mask]) # erg/cm2/s
     pars.Leuv = 4*np.pi*pars.DIST**2 * trapz(spec['FLUX'][mask], spec['WAVELENGTH'][mask]) # erg/s
     pars.FLUX = spec['FLUX'][mask]
@@ -168,12 +168,12 @@ def get_pars(name='GJ 436 b', m1=1*mp, x1=0.9, T=0, heatefficiency=0.2, spectraf
     # tau=1 pressure of X-ray/EUV absorption between 13-20eV Verner1996
     pars.gravity = G*pars.MASS/pars.R**2
     P = mp*pars.gravity / 5e-18
-    pars.scalefactor = -1*np.log(P/10) # scale heights above 10 bar
+    pars.scalefactor = -1*np.log(P/1e+7) # scale heights above 10 bar (1e7 barye)
     pars.scaleheight = kb*pars.Teq / (2.3*mp*pars.gravity)
     
     # ratio between the planet's EUV absorbing radius and planetary radius
     pars.ruvrp2 = ((pars.scaleheight*pars.scalefactor + pars.R) / pars.R)**2
-    
+
     # potential energy reduction factor due to roche lobe effect
     delta = pars.MASS / pars.MSTAR
     lam = pars.A / pars.R
@@ -185,7 +185,7 @@ def get_pars(name='GJ 436 b', m1=1*mp, x1=0.9, T=0, heatefficiency=0.2, spectraf
     # compute transonic heating rate from Johnson 2013
 
     # compute mass loss rate 
-    pars.Mdot = massflux(**pars)
+    pars.Mdot = massflux(pars.Leuv,pars.A, pars.MASS, pars.R, pars.ruvrp2,pars.K, pars.eta)
     pars.massloss = massloss(pars.Mdot, pars.R)
 
     return pars 
@@ -198,12 +198,15 @@ if __name__ == "__main__":
     #pars = get_pars('GJ 1214 b')
     #pars = get_pars('HD 97658 b')
 
-    cmass = findzero(crossover_zero, 1, 100, args=(pars.Teq,
+    cmass = findzero(crossover_zero, 1, 1000, args=(pars.Teq,
                                                     pars.Mdot,
                                                     pars.MASS,
                                                     pars.R,
                                                     pars.x1,
                                                     pars.m1) )
+
+    # compute upper and lower limit based on mass and radius uncertainties 
+    # massflux(Leuv,A,MASS,R, ruvrp2,K,eta)
 
     print('cross over mass: {:.1f}'.format(cmass) )
 
