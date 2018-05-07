@@ -1,13 +1,13 @@
 # Exoplanet-Mass-Fractionation
-Atmospheric hydrodynamic escape calculation for the crossover mass at which a heavier second constituent will not be dragged along with a lighter constituent (i.e. H).
+Exoplanets with orbits close to their host star are subject to intense stellar radiation. High energy radiation from x-ray to ultraviolet drives photochemistry and atmospheric escape in the upper atmosphere of planets. If the escape rate of a lighter constituent (i.e. H) is high enough, it can drag heavier species along with it thus fractionating the atmosphere. Here I propose to use hydrodynamic escape in an energy limited regime to explore the effects of drag on carrying away heavier species (Z$>$1).
 
 The summary of this project is as follows: 
-- Use Navier-Stokes Equation including Drag forces to model atmospheric escape from an exoplanet atmosphere
+- Use Navier-Stokes equation including drag forces to model atmospheric escape from an exoplanet atmosphere
 - Derive the energy limited escape rate from the planet using EUV spectra from MUSCLES Treasury Survey
-- Derive diffusion coefficients using kinetic theory and van der Waal radius of atoms
-- Compute the cossover mass (see Hunten 1987 for derivation) 
+- Derive diffusion coefficients using kinetic theory and van der Waal radii of atoms
+- Compute the crossover mass (see Hunten 1987 for derivation) 
 
-This project was completed for class PTYS 598B - Special Topics in Planetary Science (Atmospheric Escape) taught by Roger Yelle. 
+This project was completed for class PTYS 598B - Special Topics in Planetary Science (Atmospheric Escape) taught by Roger Yelle (Spring2018). 
 
 
 ## File Guide
